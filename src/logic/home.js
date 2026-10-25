@@ -26,7 +26,9 @@ export function homeSummary(state) {
       : `${partner} is done. Pick your night`;
     return { kind: 'together', invited, nightId: shared.suggestion?.nightId || null, planName: 'Your night with ' + partner, partner, planStatus, partnerStatus: `${partner} is done`, action: 'open-plan' };
   }
-  if (shared.inviteSent) {
+  // A server invite link exists once it is shared OR copied; copying alone never
+  // sets inviteSent, so without this the creator saw 'Resume' back into the deck.
+  if (shared.inviteSent || shared.serverInviteUrl) {
     return { kind: 'waiting', nightId: null, planName: 'Your night with ' + partner, partner, planStatus: `Waiting for ${partner}`, partnerStatus: `Invite sent. Waiting for ${partner}`, action: 'open-waiting' };
   }
   const ratedCount = (a.reactions || []).length;

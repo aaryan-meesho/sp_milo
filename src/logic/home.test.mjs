@@ -81,3 +81,12 @@ test('a local-only plan ignores server fields', () => {
   s.shared.partnerFinished = true;
   assert.equal(homeSummary(s).kind, 'fresh');
 });
+
+test('server plan: a copied (not shared) invite link shows the waiting card, not Resume', () => {
+  const s = fresh();
+  s.sessionA.reactions = Array.from({ length: 8 }, (_, i) => ({ cardId: `c${i}`, reaction: 'into_it' }));
+  s.shared.serverInviteUrl = 'https://example.test/app/?invite=x';
+  const h = homeSummary(s);
+  assert.equal(h.kind, 'waiting');
+  assert.equal(h.action, 'open-waiting');
+});

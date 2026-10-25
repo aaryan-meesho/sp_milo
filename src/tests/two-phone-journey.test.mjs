@@ -97,6 +97,12 @@ test('two phones plan one night together through the server', async () => {
     assert.ok(inviteUrl.startsWith(`${server.site}/app/?invite=`), 'the copied link is the server invite, not a demo link');
     const seatA = await seat(a.page);
     assert.equal(seatA.role, 'initiator');
+    // Copying (not sharing) the link: Home must say "waiting", not "Resume".
+    await a.page.goto(`${server.site}/app/`);
+    await a.page.locator('.milo-first-open').click({ timeout: 3000 }).catch(() => {});
+    await a.page.locator('.milo-home').waitFor();
+    assert.match(await a.page.locator('.milo-home-card').textContent(), /Waiting for Ravi/);
+    assert.equal(await a.page.locator('#miloHomeResume').count(), 0);
     // A's own half reaches the server (debounced sync) without the partner.
     await until(async () => (await serverView(a.page, seatA)).me.finished, 15000, "A's half on the server");
 
